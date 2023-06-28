@@ -12,6 +12,32 @@ services:
       - 8000:8000
     networks:
       - app-network
+      
+  mysql:
+    image: mysql:8
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=app
+      - MYSQL_ROOT_HOST=%
+      - TZ=Asia/Bangkok
+    healthcheck:
+      test: mysql --user=root --password=root
+    networks:
+      - app-network
+
+  pma:
+    image: phpmyadmin/phpmyadmin:5.1.1
+    ports:
+      - "9832:80"
+    depends_on:
+      - mysql
+    links:
+      - mysql:db
+    networks:
+      - app-network
 
 networks:
   app-network:
